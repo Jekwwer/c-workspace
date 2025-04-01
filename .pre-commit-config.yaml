@@ -1,0 +1,151 @@
+# .pre-commit-config.yaml: Sets up pre-commit hooks to automate code quality checks.
+---
+# Sets up CI to automatically update pre-commit hooks
+ci:
+  run_on_all_branches: true
+  autofix_commit_msg: 'ci(pre-commit): auto fixes from pre-commit hooks'
+  autofix_prs: true
+  autoupdate_branch: 'main'
+  autoupdate_commit_msg: 'deps(pre-commit): bump pre-commit hooks to latest version'
+  autoupdate_schedule: quarterly
+  skip:
+    - clang-format # ci can't run local hooks
+    - autoupdate # ci can't run local hooks
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      # Ensure no unresolved merge conflicts remain.
+      - id: check-merge-conflict
+        name: 'check:merge-conflicts'
+
+      # Detect files that would conflict on case-insensitive filesystems.
+      - id: check-case-conflict
+        name: 'check:case-conflicts'
+
+      # Verify file parsability by checking the abstract syntax tree.
+      - id: check-ast
+        name: 'check:ast'
+
+      # Ensure that files with shebangs have correct execution permissions.
+      - id: check-shebang-scripts-are-executable
+        name: 'check:shebang-permissions'
+
+      # Verify that executable files have an associated shebang.
+      - id: check-executables-have-shebangs
+        name: 'check:exec-shebang'
+
+      # Check for broken symlinks.
+      - id: check-symlinks
+        name: 'check:symlinks'
+
+      # Detect any accidentally committed private keys.
+      - id: detect-private-key
+        name: 'detect:private-keys'
+
+      # Validate JSON file syntax.
+      - id: check-json
+        name: 'validate:json'
+
+      # Validate YAML file syntax.
+      - id: check-yaml
+        name: 'validate:yaml'
+
+      # Ensure files end with a newline.
+      - id: end-of-file-fixer
+        name: 'fix:newline-eof'
+
+      # Fix mixed line endings (converting to LF by default).
+      - id: mixed-line-ending
+        name: 'fix:line-endings'
+        args: [--fix=lf]
+
+      # Remove any trailing whitespace.
+      - id: trailing-whitespace
+        name: 'fix:trailing-whitespace'
+
+      # Sort the contents of requirements files.
+      - id: file-contents-sorter
+        name: 'sort:requirements'
+        args: ['--ignore-case', '--unique']
+        files: '^(requirements).txt$'
+
+      # Fix formatting issues in requirements.txt.
+      - id: requirements-txt-fixer
+        name: 'fix:requirements'
+
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.44.0
+    hooks:
+      # Lint Markdown files.
+      - id: markdownlint
+        name: 'lint:markdown'
+        args: ['--ignore-path', '.gitignore']
+
+  - repo: https://github.com/tcort/markdown-link-check
+    rev: v3.13.7
+    hooks:
+      # Check for broken links in Markdown files.
+      - id: markdown-link-check
+        name: 'check:md-links'
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.37.0
+    hooks:
+      # Lint YAML files.
+      - id: yamllint
+        name: 'lint:yaml'
+        args:
+          - '--config-data'
+          - |
+            {
+              extends: default,
+              rules: {
+                line-length: {max: 88},
+                braces: {max-spaces-inside: -1},
+                comments: disable
+              }
+            }
+
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.5.3
+    hooks:
+      # Format code using Prettier.
+      - id: prettier
+        name: 'format:prettier'
+        args: ['--write', '--config', '.prettierrc']
+
+  - repo: https://github.com/streetsidesoftware/cspell-cli
+    rev: v8.17.3
+    hooks:
+      # Check spelling in files.
+      - id: cspell
+        name: 'check:spelling'
+      # Check spelling in commit messages.
+      - id: cspell
+        name: 'check:commit-spelling'
+        args:
+          - --no-must-find-files
+          - --no-progress
+          - --no-summary
+          - --files
+          - .git/COMMIT_EDITMSG
+        stages: [commit-msg]
+        always_run: true
+
+  - repo: local
+    hooks:
+      # Format code using clang-format.
+      - id: clang-format
+        name: 'format:clang'
+        entry: clang-format
+        language: system
+        files: '\.(c|h)$'
+
+      # Update pre-commit hooks automatically.
+      - id: autoupdate
+        name: 'update:precommit-hooks'
+        entry: pre-commit autoupdate
+        language: system
+        pass_filenames: false
