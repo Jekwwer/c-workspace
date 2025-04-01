@@ -1,0 +1,24 @@
+{
+  "ignorePaths": [
+    "*.json",
+    "*.svg",
+    "*.yaml",
+    "*.yml",
+    ".clang-format",
+    ".editorconfig",
+    ".gitignore",
+    ".prettierrc",
+    ".releaserc.js",
+    "Makefile"
+  ],
+  "language": "en",
+  "useGitignore": true,
+  "version": "0.2",
+  "words": [
+    "Evgenii",
+    "Jekwwer",
+    "releaserc",
+    "Shiliaev",
+    "styleguide"
+  ]
+}
