@@ -1,6 +1,6 @@
 {
   "name": "jekwwer-c-workspace",
-  "version": "0.0.0-dev",
+  "version": "1.0.0",
   "description": "A minimal template for C projects with a ready-to-use devcontainer, VS Code settings, and essential repo files.",
   "keywords": [
     "devcontainer",
